@@ -1,0 +1,30 @@
+.container { padding: 12px; }
+.header { padding: 16px 0; text-align: center; }
+.title { font-size: 20px; font-weight: 800; }
+.credits-bar {
+  display: flex; justify-content: center; align-items: center;
+  margin-top: 10px; gap: 16px; font-size: 14px;
+  background: #1e293b; padding: 8px 16px; border-radius: 20px;
+}
+.pay-link { color: #38bdf8; }
+.date-bar { text-align: center; color: #94a3b8; margin: 12px 0; padding: 8px; background: #1e293b; border-radius: 8px; }
+
+.match-card {
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 12px; padding: 16px; margin-bottom: 10px;
+}
+.match-meta { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.group { background: #818cf8; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+.time { color: #94a3b8; font-size: 13px; }
+
+.teams { display: flex; align-items: center; justify-content: space-around; }
+.team { text-align: center; flex: 1; }
+.name { font-size: 17px; font-weight: 700; display: block; }
+.elo { font-size: 12px; color: #94a3b8; }
+.vs { color: #fbbf24; font-weight: 700; }
+
+.card-footer { display: flex; justify-content: space-between; margin-top: 10px; }
+.score { color: #4ade80; font-weight: 700; font-size: 16px; }
+.lock { color: #fb923c; font-size: 12px; }
+
+.empty { text-align: center; padding: 48px; color: #94a3b8; }

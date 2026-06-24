@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ match.team_a }} vs {{ match.team_b }} - 预测详情</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-btn">← 返回</a>
+        <h1>比赛详情</h1>
+        <nav>
+            <span id="credits-badge-top">💳 <span id="credits-num">{{ credits }}</span>次</span>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Match Header -->
+        <div class="match-hero">
+            <div class="hero-teams">
+                <div class="hero-team">{{ match.team_a }}</div>
+                <div class="hero-vs">VS</div>
+                <div class="hero-team">{{ match.team_b }}</div>
+            </div>
+            <div class="hero-meta">
+                <span>{{ match.group_name or '' }}</span>
+                <span>{{ match.match_time or '' }}</span>
+            </div>
+            {% if match.status == 'finished' and match.score %}
+            <div class="hero-score">{{ match.score }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Free Preview -->
+        <section class="section" id="preview-section">
+            <h2>📊 基础数据 <span class="free-tag">免费</span></h2>
+            <div id="preview-content">
+                <div class="loading">加载中...</div>
+            </div>
+        </section>
+
+        <!-- Locked / Unlocked Section -->
+        <section class="section" id="paid-section">
+            <h2>🔮 深度预测 <span class="lock-tag" id="lock-tag">🔒 付费</span></h2>
+
+            <div id="module-selector" style="display:none;">
+                <h3>选择分析模块：</h3>
+                <div class="module-checks">
+                    <label><input type="checkbox" name="module" value="basic" checked> 胜平负+比分</label>
+                    <label><input type="checkbox" name="module" value="upset"> 爆冷分析</label>
+                    <label><input type="checkbox" name="module" value="handicap"> 让球盘分析</label>
+                </div>
+            </div>
+
+            <div id="paid-content">
+                <div class="lock-overlay" id="lock-overlay">
+                    <div class="lock-icon">🔒</div>
+                    <p>付费解锁完整预测</p>
+                    <button class="btn-primary" id="unlock-btn" onclick="unlockMatch()">
+                        解锁本场 (消耗1次)
+                    </button>
+                    <p class="unlock-hint">
+                        余额: <span id="credits-display">{{ credits }}</span> 次
+                        {% if credits <= 0 %}
+                        <br><a href="/pay" class="link">💳 立即充值</a>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+    <script>
+        const MATCH_ID = {{ match.id }};
+        const IS_UNLOCKED = {{ 'true' if unlocked else 'false' }};
+        initMatchPage(MATCH_ID, IS_UNLOCKED);
+    </script>
+</body>
+</html>

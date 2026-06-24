@@ -1,0 +1,7 @@
+database.sqlite
+__pycache__/
+*.pyc
+当前网址.txt
+cloudflared.exe
+*.bat
+网站二维码.png

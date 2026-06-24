@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界杯比分预测</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>⚽ 世界杯比分预测</h1>
+        <nav>
+            <a href="/pay" class="btn-small">💳 充值 (<span id="credits-badge">{{ credits }}</span>次)</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="date-header">{{ today }} 赛程</div>
+
+        {% if not matches %}
+        <div class="empty-state">
+            <p>📅 今日暂无比赛</p>
+            <p class="sub">管理员可在后台添加赛程</p>
+        </div>
+        {% endif %}
+
+        <div class="match-list">
+            {% for m in matches %}
+            <a href="/match/{{ m.id }}" class="match-card">
+                <div class="match-header">
+                    <span class="group-tag">{{ m.group_name or '' }}</span>
+                    <span class="time-tag">{{ m.match_time or '' }}</span>
+                </div>
+                <div class="match-teams">
+                    <div class="team team-a">
+                        <span class="team-name">{{ m.team_a }}</span>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team team-b">
+                        <span class="team-name">{{ m.team_b }}</span>
+                    </div>
+                </div>
+                <div class="match-footer">
+                    {% if m.status == 'finished' and m.score %}
+                    <span class="score-badge">{{ m.score }}</span>
+                    {% endif %}
+                    <span class="lock-badge">
+                        🔒 付费解锁
+                    </span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <p>基于 Elo + 泊松 + 蒙特卡洛 量化模型 | 不构成投注建议</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<view class="container">
+  <!-- Hero -->
+  <view class="hero">
+    <view class="hero-teams">
+      <text class="hero-name">{{team_a}}</text>
+      <text class="hero-vs">VS</text>
+      <text class="hero-name">{{team_b}}</text>
+    </view>
+    <text class="hero-meta">{{group}} | {{time_str}}</text>
+  </view>
+
+  <!-- Free Preview -->
+  <view class="section">
+    <text class="section-title">📊 基础数据 <text class="tag free">免费</text></text>
+    <view class="data-row">
+      <text class="label">Elo 评级</text>
+      <text class="value">{{elo_a}} vs {{elo_b}}</text>
+    </view>
+    <view class="data-row">
+      <text class="label">预期进球(xG)</text>
+      <text class="value">{{xg_a}} vs {{xg_b}}</text>
+    </view>
+  </view>
+
+  <!-- Locked Content -->
+  <view class="section">
+    <text class="section-title">🔮 深度预测</text>
+
+    <view wx:if="{{!unlocked}}" class="lock-box">
+      <text class="lock-icon">🔒</text>
+      <text class="lock-text">付费解锁完整预测</text>
+      <button class="unlock-btn" bindtap="unlock">解锁本场 (消耗1次)</button>
+      <text class="hint">余额: {{credits}} 次</text>
+    </view>
+
+    <view wx:if="{{unlocked && prediction}}">
+      <!-- Win/Draw/Loss -->
+      <text class="sub-title">📈 胜平负概率</text>
+      <view class="prob-row">
+        <view class="prob-item">
+          <text class="prob-label">{{team_a}}胜</text>
+          <text class="prob-val green">{{prediction.final.win_a}}%</text>
+        </view>
+        <view class="prob-item">
+          <text class="prob-label">平局</text>
+          <text class="prob-val yellow">{{prediction.final.draw}}%</text>
+        </view>
+        <view class="prob-item">
+          <text class="prob-label">{{team_b}}胜</text>
+          <text class="prob-val">{{prediction.final.win_b}}%</text>
+        </view>
+      </view>
+
+      <!-- Top Scores -->
+      <text class="sub-title">🎯 最可能比分</text>
+      <view class="scores">
+        <text wx:for="{{prediction.top_scores}}" wx:key="index" class="score-item">
+          {{item[0]}} ({{item[1]}}%)
+        </text>
+      </view>
+
+      <!-- Upset -->
+      <view wx:if="{{prediction.upset}}">
+        <text class="sub-title">🔥 爆冷分析</text>
+        <view class="data-row">
+          <text class="label">爆冷概率</text>
+          <text class="value">{{prediction.upset.adjusted_upset_prob}}%</text>
+        </view>
+        <view class="data-row">
+          <text class="label">爆冷等级</text>
+          <text class="value orange">{{prediction.upset.tier}}</text>
+        </view>
+      </view>
+
+      <!-- Handicap -->
+      <view wx:if="{{prediction.handicap}}">
+        <text class="sub-title">🎰 让球盘</text>
+        <view class="prob-row">
+          <view class="prob-item">
+            <text class="prob-label">赢盘</text>
+            <text class="prob-val green">{{prediction.handicap.cover}}%</text>
+          </view>
+          <view class="prob-item">
+            <text class="prob-label">走水</text>
+            <text class="prob-val yellow">{{prediction.handicap.push}}%</text>
+          </view>
+          <view class="prob-item">
+            <text class="prob-label">输盘</text>
+            <text class="prob-val red">{{prediction.handicap.lose}}%</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

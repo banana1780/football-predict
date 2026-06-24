@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="header">
+    <text class="title">⚽ 世界杯比分预测</text>
+    <view class="credits-bar">
+      <text>余额：{{credits}} 次</text>
+      <navigator url="/pages/pay/pay" class="pay-link">💳 充值</navigator>
+    </view>
+  </view>
+
+  <view class="date-bar">{{today}}</view>
+
+  <view wx:if="{{matches.length === 0}}" class="empty">
+    <text>📅 今日暂无比赛</text>
+  </view>
+
+  <view wx:for="{{matches}}" wx:key="id" class="match-card"
+        bindtap="goMatch" data-id="{{item.id}}">
+    <view class="match-meta">
+      <text class="group">{{item.group_name}}</text>
+      <text class="time">{{item.match_time}}</text>
+    </view>
+
+    <view class="teams">
+      <view class="team">
+        <text class="name">{{item.team_a}}</text>
+        <text class="elo">{{item.elo_a || '--'}}</text>
+      </view>
+      <text class="vs">VS</text>
+      <view class="team">
+        <text class="name">{{item.team_b}}</text>
+        <text class="elo">{{item.elo_b || '--'}}</text>
+      </view>
+    </view>
+
+    <view class="card-footer">
+      <text wx:if="{{item.status === 'finished'}}" class="score">{{item.score || '--'}}</text>
+      <text class="lock">{{item.locked ? '🔒 付费解锁' : '✅ 已解锁'}}</text>
+    </view>
+  </view>
+</view>

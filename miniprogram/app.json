@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/match/match",
+    "pages/pay/pay"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#0f172a",
+    "navigationBarTitleText": "世界杯比分预测",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0f172a"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

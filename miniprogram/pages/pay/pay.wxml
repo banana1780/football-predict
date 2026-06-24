@@ -1,0 +1,37 @@
+<view class="container">
+  <view class="credits-bar">
+    <text>当前余额：<text class="credits-num">{{credits}}</text> 次</text>
+  </view>
+
+  <!-- Tier Selection -->
+  <view class="section">
+    <text class="section-title">选择场次</text>
+    <view class="tier-grid">
+      <view wx:for="{{tiers}}" wx:key="id"
+            class="tier {{item.id === selectedTier ? 'tier-active' : ''}}"
+            bindtap="selectTier" data-id="{{item.id}}" data-credits="{{item.credits}}" data-price="{{item.price}}">
+        <text class="tier-name">{{item.label}}</text>
+        <text class="tier-price">¥{{item.price}}</text>
+        <text wx:if="{{item.tag}}" class="tier-tag">{{item.tag}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Payment -->
+  <view class="section" wx:if="{{selectedTier}}">
+    <text class="section-title">扫码支付 ¥{{selectedPrice}}</text>
+    <view class="qr-box">
+      <image src="{{apiBase}}/static/微信图片_20260624131929_183_1960.jpg" mode="aspectFit" class="qr-img" />
+    </view>
+    <text class="pay-hint">1. 微信扫码支付 ¥{{selectedPrice}}</text>
+    <text class="pay-hint">2. 输入你的微信昵称</text>
+    <text class="pay-hint">3. 管理员确认后自动解锁</text>
+
+    <input class="nickname-input" placeholder="输入你的微信昵称" bindinput="onNickname" value="{{nickname}}" />
+
+    <button class="submit-btn" bindtap="submitPay" disabled="{{!nickname}}">
+      已支付 ¥{{selectedPrice}}，提交
+    </button>
+    <text wx:if="{{msg}}" class="msg {{msgType}}">{{msg}}</text>
+  </view>
+</view>

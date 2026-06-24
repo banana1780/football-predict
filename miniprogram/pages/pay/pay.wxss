@@ -1,0 +1,33 @@
+.container { padding: 12px; }
+.credits-bar { background: #818cf8; color: #fff; text-align: center; padding: 14px; border-radius: 12px; margin-bottom: 12px; }
+.credits-num { font-size: 24px; font-weight: 800; }
+
+.section { background: #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+.section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: block; }
+
+.tier-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.tier {
+  width: calc(20% - 5px); text-align: center; padding: 8px 4px;
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+}
+.tier-active { border-color: #38bdf8; background: rgba(56,189,248,0.15); box-shadow: 0 0 6px rgba(56,189,248,0.3); }
+.tier-name { font-size: 12px; color: #94a3b8; display: block; }
+.tier-price { font-size: 15px; font-weight: 700; color: #38bdf8; display: block; }
+.tier-tag { font-size: 10px; color: #4ade80; }
+
+.qr-box { text-align: center; padding: 12px; }
+.qr-img { width: 200px; height: 200px; border-radius: 12px; }
+.pay-hint { display: block; text-align: center; color: #94a3b8; font-size: 13px; padding: 3px 0; }
+
+.nickname-input {
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  padding: 10px; margin: 12px 0; color: #e2e8f0; font-size: 14px;
+}
+.submit-btn {
+  background: linear-gradient(135deg, #4ade80, #38bdf8); color: #fff;
+  border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600;
+}
+.submit-btn[disabled] { opacity: 0.4; }
+.msg { display: block; text-align: center; margin-top: 10px; font-size: 13px; }
+.success { color: #4ade80; }
+.error { color: #f87171; }

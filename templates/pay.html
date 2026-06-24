@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充值 - 世界杯比分预测</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-btn">← 返回</a>
+        <h1>💳 充值</h1>
+    </header>
+
+    <main>
+        <div class="credits-bar">
+            当前余额：<strong id="credits-amount">{{ credits }}</strong> 次
+        </div>
+
+        <!-- QR Scan Payment -->
+        <section class="section">
+            <h2>📱 扫码支付</h2>
+
+            <!-- Tier Selection -->
+            <h3>选择场次：</h3>
+            <div class="tier-grid" id="tier-selector">
+                {% for t in tiers %}
+                <div class="tier-card tier-clickable" data-credits="{{ t.credits }}" data-price="{{ t.price }}"
+                     onclick="selectTier(this, {{ t.credits }}, {{ t.price }})">
+                    <div class="tier-name">{{ t.label }}</div>
+                    <div class="tier-price">¥{{ t.price }}</div>
+                    {% if t.tag %}
+                    <div class="tier-tag">{{ t.tag }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- QR Code -->
+            <div class="qr-box">
+                <img src="/static/微信图片_20260624131929_183_1960.jpg" alt="付款码"
+                     style="width:200px;height:200px;border-radius:12px;">
+                <p class="qr-hint" id="price-hint">请先选择场次</p>
+            </div>
+
+            <!-- Submit -->
+            <div class="redeem-box">
+                <input type="text" id="nickname-input"
+                       placeholder="输入你的微信昵称"
+                       autocomplete="off">
+                <button class="btn-primary" id="submit-btn" disabled onclick="submitPayment()">
+                    先选择场次
+                </button>
+            </div>
+            <div id="pay-msg"></div>
+            <div id="pay-status"></div>
+        </section>
+
+        <!-- Card Code (backup) -->
+        <section class="section">
+            <h2>🎫 卡密兑换（备用）</h2>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px;">已购买卡密的用户在此兑换</p>
+            <div class="redeem-box">
+                <input type="text" id="card-input"
+                       placeholder="输入卡密，如 FP-XXXX-XXXX-XXXX"
+                       autocomplete="off">
+                <button class="btn-primary" onclick="redeemCard()">激活</button>
+            </div>
+            <div id="redeem-msg"></div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+    <script>
+        let selectedCredits = 0;
+        let selectedPrice = 0;
+
+        function selectTier(el, credits, price) {
+            document.querySelectorAll('.tier-clickable').forEach(e => e.classList.remove('tier-selected'));
+            el.classList.add('tier-selected');
+            selectedCredits = credits;
+            selectedPrice = price;
+            document.getElementById('price-hint').textContent = `请支付 ¥${price}`;
+            document.getElementById('submit-btn').textContent = `已付 ¥${price}，提交`;
+            document.getElementById('submit-btn').disabled = false;
+        }
+    </script>
+</body>
+</html>

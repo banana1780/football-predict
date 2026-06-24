@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 世界杯比分预测</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-btn">← 首页</a>
+        <h1>🔧 管理后台</h1>
+    </header>
+
+    <main>
+        <!-- Login -->
+        <section class="section" id="admin-login">
+            <h2>管理员登录</h2>
+            <input type="password" id="admin-token" placeholder="输入管理密钥">
+            <button class="btn-primary" onclick="adminLogin()">登录</button>
+        </section>
+
+        <div id="admin-dashboard" style="display:none;">
+
+            <!-- Pending Payment Approvals (MOST IMPORTANT) -->
+            <section class="section" style="border: 2px solid var(--orange);">
+                <h2>🔔 待确认付款 <span style="color:var(--orange);">（最重要）</span></h2>
+                <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px;">
+                    用户扫码付了钱，提交了昵称。你核对手机上的到账通知，点确认。
+                </p>
+                <button class="btn-small" onclick="loadPending()">刷新待确认</button>
+                <div id="pending-list">
+                    <p style="color:var(--text-dim);padding:12px;">点击刷新</p>
+                </div>
+            </section>
+
+            <!-- QR Code Status -->
+            <section class="section">
+                <h2>📱 付款码状态</h2>
+                <p style="font-size:0.85rem;">你的收款码图片: <code>static/qr-code.png</code></p>
+                <p style="color:var(--text-dim);font-size:0.8rem;">
+                    截屏微信/支付宝收款码 → 保存为 <code>qr-code.png</code> → 放到 <code>C:\project\football-predict-app\static\</code> 文件夹
+                </p>
+            </section>
+
+            <!-- Generate Cards -->
+            <section class="section">
+                <h2>🎫 生成卡密（备用）</h2>
+                <div class="row">
+                    <select id="card-tier">
+                        {% for tier in tiers %}
+                        <option value="{{ tier.id }}">{{ tier.label }} ({{ tier.credits }}场)</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" id="card-count" value="1" min="1" max="50" style="width:80px;">
+                    <button class="btn-primary" onclick="generateCards()">生成</button>
+                </div>
+                <div id="gen-result"></div>
+            </section>
+
+            <!-- Add Match -->
+            <section class="section">
+                <h2>📋 添加比赛</h2>
+                <div class="form-grid">
+                    <input type="text" id="m-team-a" placeholder="主队 (中文名)">
+                    <input type="text" id="m-team-b" placeholder="客队 (中文名)">
+                    <input type="date" id="m-date" placeholder="日期">
+                    <input type="text" id="m-time" placeholder="时间 (如 03:00)">
+                    <input type="text" id="m-group" placeholder="小组 (如 A组)">
+                    <input type="number" id="m-handicap" placeholder="让球 (-1=主让1球)" value="-1">
+                </div>
+                <button class="btn-primary" onclick="addMatch()">添加比赛</button>
+                <div id="add-result"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
