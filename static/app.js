@@ -282,24 +282,27 @@ async function loadReview(date) {
 
         let html = '';
         data.results.forEach(r => {
-            const dot = r.matched
-                ? '<span style="color:#4ade80;font-size:18px;">●</span>'
-                : '<span style="color:#f87171;font-size:18px;">●</span>';
-            const status = r.matched
-                ? '<span style="color:#4ade80;">命中</span>'
-                : '<span style="color:#f87171;">未中</span>';
+            const dirDot = r.matched
+                ? '<span style="color:#4ade80;">●</span>'
+                : '<span style="color:#f87171;">●</span>';
+            const scoreDot = r.score_matched
+                ? '<span style="color:#4ade80;">●</span>'
+                : '<span style="color:#f87171;">●</span>';
 
-            html += '<div class="data-row" style="padding:10px 0;">';
-            html += '<span>' + dot + ' ' + r.team_a + ' <strong>' + r.score + '</strong> ' + r.team_b + '</span>';
-            html += '<span style="font-size:0.8rem;">预测' + renderResultLabel(r.predicted_result) + ' → 实际' + renderResultLabel(r.actual_result) + ' ' + status + '</span>';
+            html += '<div class="data-row" style="padding:10px 0;flex-wrap:wrap;">';
+            html += '<span>' + dirDot + ' ' + r.team_a + ' <strong>' + r.score + '</strong> ' + r.team_b + '</span>';
+            html += '<span style="font-size:0.8rem;">方向: ' + renderResultLabel(r.predicted_result) + '/' + renderResultLabel(r.actual_result) + '</span>';
+            html += '<span style="font-size:0.8rem;">比分: ' + scoreDot + ' (' + (r.top_scores || []).join(' ') + ')</span>';
             html += '</div>';
         });
 
         // Summary
         const total = data.results.length;
-        const hits = data.results.filter(r => r.matched).length;
+        const dirHits = data.results.filter(r => r.matched).length;
+        const scoreHits = data.results.filter(r => r.score_matched).length;
         html += '<div style="text-align:center;padding:12px;margin-top:8px;background:var(--bg);border-radius:8px;">';
-        html += '<span style="font-size:1.2rem;">准确率：<strong style="color:var(--accent);">' + hits + '/' + total + '</strong> (' + Math.round(hits/total*100) + '%)</span>';
+        html += '<span style="font-size:1rem;">方向准确率：<strong style=\"color:var(--accent);\">' + dirHits + '/' + total + '</strong> (' + Math.round(dirHits/total*100) + '%)</span><br>';
+        html += '<span style="font-size:1rem;">比分准确率：<strong style=\"color:var(--accent);\">' + scoreHits + '/' + total + '</strong> (' + Math.round(scoreHits/total*100) + '%)</span>';
         html += '</div>';
 
         container.innerHTML = html;

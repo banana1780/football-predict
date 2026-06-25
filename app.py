@@ -355,6 +355,11 @@ def api_results():
             actual_result = 'win_b'
         pred_result = max(pred['final'], key=pred['final'].get)
         matched = (pred_result == actual_result)
+
+        # Check if actual score was in top 5 predictions
+        top_scores = [s[0] for s in pred['top_scores'][:5]]
+        score_matched = actual in top_scores
+
         results.append({
             'id': match['id'],
             'team_a': match['team_a'],
@@ -364,6 +369,8 @@ def api_results():
             'actual_result': actual_result,
             'predicted_result': pred_result,
             'matched': matched,
+            'score_matched': score_matched,
+            'top_scores': top_scores,
             'predicted_probs': {k: round(v,1) for k,v in pred['final'].items()},
         })
     return jsonify({'results': results})
