@@ -42,9 +42,9 @@
 
         <!-- Locked / Unlocked Section -->
         <section class="section" id="paid-section">
-            <h2>🔮 深度预测 <span class="lock-tag" id="lock-tag">🔒 付费</span></h2>
+            <h2>🔮 深度预测 <span class="free-tag">免费</span></h2>
 
-            <div id="module-selector" style="display:none;">
+            <div id="module-selector">
                 <h3>选择分析模块：</h3>
                 <div class="module-checks">
                     <label><input type="checkbox" name="module" value="basic" checked> 胜平负+比分</label>
@@ -54,19 +54,7 @@
             </div>
 
             <div id="paid-content">
-                <div class="lock-overlay" id="lock-overlay">
-                    <div class="lock-icon">🔒</div>
-                    <p>付费解锁完整预测</p>
-                    <button class="btn-primary" id="unlock-btn" onclick="unlockMatch()">
-                        解锁本场 (消耗1次)
-                    </button>
-                    <p class="unlock-hint">
-                        余额: <span id="credits-display">{{ credits }}</span> 次
-                        {% if credits <= 0 %}
-                        <br><a href="/pay" class="link">💳 立即充值</a>
-                        {% endif %}
-                    </p>
-                </div>
+                <div class="loading">加载中...</div>
             </div>
         </section>
     </main>
