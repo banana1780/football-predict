@@ -51,10 +51,20 @@
             </a>
             {% endfor %}
         </div>
+
+        <!-- Review Section -->
+        <section class="section" style="margin-top:20px;">
+            <h2>📋 赛后复盘</h2>
+            <div id="review-list">
+                <p class="loading" style="color:var(--text-dim);text-align:center;">加载中...</p>
+            </div>
+        </section>
     </main>
 
     <footer>
         <p>基于 Elo + 泊松 + 蒙特卡洛 量化模型 | 不构成投注建议</p>
     </footer>
+    <script src="/static/app.js"></script>
+    <script>loadReview();</script>
 </body>
 </html>

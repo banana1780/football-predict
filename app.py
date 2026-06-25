@@ -363,6 +363,49 @@ def api_pay_status():
     })
 
 
+@app.route('/api/results')
+def api_results():
+    """Get past match results with prediction accuracy comparison"""
+    conn = get_db()
+    cursor = conn.cursor()
+    rows = cursor.execute(
+        "SELECT * FROM matches WHERE status='finished' AND score IS NOT NULL ORDER BY match_date DESC"
+    ).fetchall()
+    conn.close()
+
+    results = []
+    for m in rows:
+        match = dict(m)
+        try:
+            pred = engine.predict(match['team_a'], match['team_b'])
+        except:
+            continue
+        actual = match['score']
+        parts = actual.split('-')
+        actual_a = int(parts[0])
+        actual_b = int(parts[1])
+        if actual_a > actual_b:
+            actual_result = 'win_a'
+        elif actual_a == actual_b:
+            actual_result = 'draw'
+        else:
+            actual_result = 'win_b'
+        pred_result = max(pred['final'], key=pred['final'].get)
+        matched = (pred_result == actual_result)
+        results.append({
+            'id': match['id'],
+            'team_a': match['team_a'],
+            'team_b': match['team_b'],
+            'group_name': match['group_name'] or '',
+            'score': match['score'],
+            'actual_result': actual_result,
+            'predicted_result': pred_result,
+            'matched': matched,
+            'predicted_probs': {k: round(v,1) for k,v in pred['final'].items()},
+        })
+    return jsonify({'results': results})
+
+
 # -- Admin routes --
 
 @app.route('/api/admin/generate', methods=['POST'])
