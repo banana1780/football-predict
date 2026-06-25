@@ -26,6 +26,7 @@ from models import (init_db, get_db, create_card, redeem_card,
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Initialize engine (singleton)
 engine = FootballPredictionEngine(data_dir=ENGINE_DATA_DIR)
@@ -163,15 +164,10 @@ def api_match_preview(match_id):
 
 @app.route('/api/matches/<int:match_id>/full')
 def api_match_full(match_id):
-    """Full prediction - currently FREE for promotion"""
+    """Full prediction - FREE for all users"""
     match = get_match(match_id)
     if not match:
         return jsonify({'error': 'Match not found'}), 404
-
-    # FREE MODE: skip unlock check, always return full data
-    # sid = get_sid()
-    # if not is_match_unlocked(sid, match_id):
-    #     return jsonify({'error': '请先解锁本场比赛', 'locked': True}), 403
 
     modules_str = request.args.get('modules', 'all')
     modules = set(modules_str.split(',')) if modules_str != 'all' else {'all'}
@@ -179,83 +175,44 @@ def api_match_full(match_id):
     try:
         pred = engine.predict(match['team_a'], match['team_b'])
         upset = engine.upset_analysis(match['team_a'], match['team_b'], {
-            'is_first_match': True,
-            'expansion_format': True
+            'is_first_match': True, 'expansion_format': True
         })
     except Exception as e:
         return jsonify({'error': f'Engine error: {str(e)}'}), 500
 
-    result = {
-        'team_a': pred['team_a'],
-        'team_b': pred['team_b'],
-        'match_time': match['match_time'] or '',
-        'group_name': match['group_name'] or '',
-        'free_mode': True,
-    }
+    result = {'team_a': pred['team_a'], 'team_b': pred['team_b'],
+              'match_time': match['match_time'] or '', 'group_name': match['group_name'] or '',
+              'free_mode': True}
 
     if 'all' in modules or 'basic' in modules:
-        result['final'] = pred['final']
-        result['top_scores'] = pred['top_scores']
-        result['poisson'] = pred['poisson']
-        result['combined'] = pred['combined']
+        result['final'] = pred['final']; result['top_scores'] = pred['top_scores']
+        result['poisson'] = pred['poisson']; result['combined'] = pred['combined']
         result['elo_expected'] = round(pred['elo_expected_a'] * 100, 1)
-        stats_a = engine.team_stats.get(match['team_a'], {})
-        stats_b = engine.team_stats.get(match['team_b'], {})
+        sa = engine.team_stats.get(match['team_a'], {'avg_goals':1.35,'avg_conceded':1.35})
+        sb = engine.team_stats.get(match['team_b'], {'avg_goals':1.35,'avg_conceded':1.35})
         result['team_stats'] = {
-            'a': {
-                'goals': stats_a.get('avg_goals', 1.35),
-                'conceded': stats_a.get('avg_conceded', 1.35),
-                'attack_index': round(stats_a.get('avg_goals', 1.35) / 1.35, 2),
-                'defense_index': round(stats_a.get('avg_conceded', 1.35) / 1.35, 2),
-            },
-            'b': {
-                'goals': stats_b.get('avg_goals', 1.35),
-                'conceded': stats_b.get('avg_conceded', 1.35),
-                'attack_index': round(stats_b.get('avg_goals', 1.35) / 1.35, 2),
-                'defense_index': round(stats_b.get('avg_conceded', 1.35) / 1.35, 2),
-            }
-        }
-        total_goals = {}
-        for tg in range(9):
-            prob = 0.0
-            for ga in range(min(tg + 1, 8)):
-                gb = tg - ga
-                if 0 <= gb < 8:
-                    prob += engine.poisson_prob(pred['xg_a'], ga) * engine.poisson_prob(pred['xg_b'], gb)
-            total_goals[str(tg if tg < 8 else '8+')] = round(prob * 100, 1)
-        result['total_goals_dist'] = total_goals
+            'a': {'goals': sa['avg_goals'], 'conceded': sa['avg_conceded'],
+                  'attack_index': round(sa['avg_goals']/1.35,2), 'defense_index': round(sa['avg_conceded']/1.35,2)},
+            'b': {'goals': sb['avg_goals'], 'conceded': sb['avg_conceded'],
+                  'attack_index': round(sb['avg_goals']/1.35,2), 'defense_index': round(sb['avg_conceded']/1.35,2)}}
+        tg = {}
+        for t in range(9):
+            p = sum(engine.poisson_prob(pred['xg_a'],a)*engine.poisson_prob(pred['xg_b'],t-a)
+                    for a in range(min(t+1,8)) if 0 <= t-a < 8)
+            tg[str(t if t<8 else '8+')] = round(p*100,1)
+        result['total_goals_dist'] = tg
 
     if 'all' in modules or 'upset' in modules:
-        result['upset'] = {
-            'favorite': upset['favorite'],
-            'underdog': upset['underdog'],
-            'elo_gap': upset['elo_gap'],
-            'adjusted_upset_prob': upset['adjusted_upset_prob'],
-            'upset_combined': upset['upset_combined'],
-            'tier': upset['tier'],
-            'base_draw_prob': upset['base_draw_prob'],
-        }
+        result['upset'] = {'favorite':upset['favorite'],'underdog':upset['underdog'],
+            'elo_gap':upset['elo_gap'],'adjusted_upset_prob':upset['adjusted_upset_prob'],
+            'upset_combined':upset['upset_combined'],'tier':upset['tier'],'base_draw_prob':upset['base_draw_prob']}
 
     if 'all' in modules or 'handicap' in modules:
-        xg_a, xg_b = pred['xg_a'], pred['xg_b']
-        H = match.get('handicap', -1) or -1
-        win_h = draw_h = lose_h = 0.0
-        for ga in range(8):
-            for gb in range(8):
-                p = engine.poisson_prob(xg_a, ga) * engine.poisson_prob(xg_b, gb)
-                adj = ga + H
-                if adj > gb:
-                    win_h += p
-                elif adj == gb:
-                    draw_h += p
-                else:
-                    lose_h += p
-        result['handicap'] = {
-            'line': H,
-            'cover': round(win_h * 100, 1),
-            'push': round(draw_h * 100, 1),
-            'lose': round(lose_h * 100, 1),
-        }
+        xa, xb = pred['xg_a'], pred['xg_b']; H = match.get('handicap',-1) or -1
+        w = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H > b)
+        d = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H == b)
+        l = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H < b)
+        result['handicap'] = {'line':H,'cover':round(w*100,1),'push':round(d*100,1),'lose':round(l*100,1)}
 
     return jsonify(result)
 
@@ -364,11 +321,19 @@ def api_pay_status():
 @app.route('/api/results')
 def api_results():
     """Get past match results with prediction accuracy comparison"""
+    date_filter = request.args.get('date', '')
+
     conn = get_db()
     cursor = conn.cursor()
-    rows = cursor.execute(
-        "SELECT * FROM matches WHERE status='finished' AND score IS NOT NULL ORDER BY match_date DESC"
-    ).fetchall()
+    if date_filter:
+        rows = cursor.execute(
+            "SELECT * FROM matches WHERE status='finished' AND score IS NOT NULL AND match_date = ? ORDER BY match_time",
+            (date_filter,)
+        ).fetchall()
+    else:
+        rows = cursor.execute(
+            "SELECT * FROM matches WHERE status='finished' AND score IS NOT NULL ORDER BY match_date DESC, match_time"
+        ).fetchall()
     conn.close()
 
     results = []

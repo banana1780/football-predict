@@ -70,8 +70,8 @@
     </footer>
     <script src="/static/app.js"></script>
     <script>
-    loadReview();
     let currentDate = '{{ today }}';
+    loadReview(currentDate);
     function changeDate(delta) {
         let d = new Date(currentDate);
         d.setDate(d.getDate() + delta);
@@ -94,6 +94,7 @@
                         '</a>';
                 });
                 document.querySelector('.match-list').innerHTML = html || '<div class=\"empty-state\"><p>当日暂无比赛</p></div>';
+            loadReview(currentDate);
             });
     }
     </script>

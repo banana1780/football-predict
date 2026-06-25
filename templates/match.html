@@ -10,13 +10,9 @@
     <header>
         <a href="/" class="back-btn">← 返回</a>
         <h1>比赛详情</h1>
-        <nav>
-            <span id="credits-badge-top">💳 <span id="credits-num">{{ credits }}</span>次</span>
-        </nav>
     </header>
 
     <main>
-        <!-- Match Header -->
         <div class="match-hero">
             <div class="hero-teams">
                 <div class="hero-team">{{ match.team_a }}</div>
@@ -32,18 +28,13 @@
             {% endif %}
         </div>
 
-        <!-- Free Preview -->
-        <section class="section" id="preview-section">
+        <section class="section">
             <h2>📊 基础数据 <span class="free-tag">免费</span></h2>
-            <div id="preview-content">
-                <div class="loading">加载中...</div>
-            </div>
+            <div id="preview-content"><div class="loading">加载中...</div></div>
         </section>
 
-        <!-- Locked / Unlocked Section -->
-        <section class="section" id="paid-section">
+        <section class="section">
             <h2>🔮 深度预测 <span class="free-tag">免费</span></h2>
-
             <div id="module-selector">
                 <h3>选择分析模块：</h3>
                 <div class="module-checks">
@@ -52,17 +43,14 @@
                     <label><input type="checkbox" name="module" value="handicap"> 让球盘分析</label>
                 </div>
             </div>
-
-            <div id="paid-content">
-                <div class="loading">加载中...</div>
-            </div>
+            <div id="paid-content"><div class="loading">加载中...</div></div>
         </section>
     </main>
 
     <script src="/static/app.js"></script>
     <script>
         const MATCH_ID = {{ match.id }};
-        const IS_UNLOCKED = true;  // FREE MODE
+        const IS_UNLOCKED = true;
         initMatchPage(MATCH_ID, IS_UNLOCKED);
     </script>
 </body>

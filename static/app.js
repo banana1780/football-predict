@@ -266,12 +266,13 @@ function renderResultLabel(result) {
     return '客胜';
 }
 
-async function loadReview() {
+async function loadReview(date) {
     const container = document.getElementById('review-list');
     if (!container) return;
 
+    const queryDate = date || (typeof currentDate !== 'undefined' ? currentDate : new Date().toISOString().slice(0,10));
     try {
-        const resp = await fetch('/api/results');
+        const resp = await fetch('/api/results?date=' + queryDate);
         const data = await resp.json();
 
         if (!data.results || data.results.length === 0) {
