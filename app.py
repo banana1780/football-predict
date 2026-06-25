@@ -163,16 +163,16 @@ def api_match_preview(match_id):
 
 @app.route('/api/matches/<int:match_id>/full')
 def api_match_full(match_id):
-    """Full prediction - requires unlock"""
+    """Full prediction - currently FREE for promotion"""
     match = get_match(match_id)
     if not match:
         return jsonify({'error': 'Match not found'}), 404
 
-    sid = get_sid()
-    if not is_match_unlocked(sid, match_id):
-        return jsonify({'error': '请先解锁本场比赛', 'locked': True}), 403
+    # FREE MODE: skip unlock check, always return full data
+    # sid = get_sid()
+    # if not is_match_unlocked(sid, match_id):
+    #     return jsonify({'error': '请先解锁本场比赛', 'locked': True}), 403
 
-    # Get user-selected modules from query params (comma-separated)
     modules_str = request.args.get('modules', 'all')
     modules = set(modules_str.split(',')) if modules_str != 'all' else {'all'}
 
@@ -190,6 +190,7 @@ def api_match_full(match_id):
         'team_b': pred['team_b'],
         'match_time': match['match_time'] or '',
         'group_name': match['group_name'] or '',
+        'free_mode': True,
     }
 
     if 'all' in modules or 'basic' in modules:
@@ -198,7 +199,6 @@ def api_match_full(match_id):
         result['poisson'] = pred['poisson']
         result['combined'] = pred['combined']
         result['elo_expected'] = round(pred['elo_expected_a'] * 100, 1)
-        # Attack/defense coefficients
         stats_a = engine.team_stats.get(match['team_a'], {})
         stats_b = engine.team_stats.get(match['team_b'], {})
         result['team_stats'] = {
@@ -215,7 +215,6 @@ def api_match_full(match_id):
                 'defense_index': round(stats_b.get('avg_conceded', 1.35) / 1.35, 2),
             }
         }
-        # Total goals distribution
         total_goals = {}
         for tg in range(9):
             prob = 0.0
@@ -238,7 +237,6 @@ def api_match_full(match_id):
         }
 
     if 'all' in modules or 'handicap' in modules:
-        # Compute handicap probabilities for the match's handicap line
         xg_a, xg_b = pred['xg_a'], pred['xg_b']
         H = match.get('handicap', -1) or -1
         win_h = draw_h = lose_h = 0.0
