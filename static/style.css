@@ -385,6 +385,13 @@ footer {
 .pay-steps { margin: 12px 0; padding: 12px; background: var(--bg); border-radius: 8px; }
 .pay-steps p { padding: 4px 0; font-size: 0.9rem; }
 
+/* Review table */
+.review-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.review-table th { color: var(--text-dim); padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: center; }
+.review-table td { padding: 8px 4px; border-bottom: 1px solid var(--border); text-align: center; }
+.review-table .green { color: var(--green); }
+.review-table .red { color: var(--red); }
+
 /* ── Loading & Empty ── */
 .loading { text-align: center; padding: 16px; color: var(--text-dim); }
 .empty-state { text-align: center; padding: 48px; color: var(--text-dim); }

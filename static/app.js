@@ -280,27 +280,23 @@ async function loadReview(date) {
             return;
         }
 
-        let html = '';
+        let html = '<table class=\"review-table\"><tr><th>比赛</th><th>比分</th><th>方向</th><th>让球</th><th>比分预测</th></tr>';
         data.results.forEach(r => {
-            const dirDot = r.matched
-                ? '<span style="color:#4ade80;">●</span>'
-                : '<span style="color:#f87171;">●</span>';
-            const scoreDot = r.score_matched
-                ? '<span style="color:#4ade80;">●</span>'
-                : '<span style="color:#f87171;">●</span>';
+            const dirDot = r.matched ? 'O' : 'X';
+            const hcpDot = r.handicap_matched ? 'O' : 'X';
+            const scoreLabel = r.score_matched ? '命中' : '未中';
+            const hcpResult = (r.handicap_result === 'cover' ? '赢盘' : (r.handicap_result === 'push' ? '走水' : '输盘'));
+            const hcpPred = (r.handicap_predicted === 'cover' ? '赢盘' : (r.handicap_predicted === 'push' ? '走水' : '输盘'));
 
-            const hcpDot = r.handicap_matched
-                ? '<span style=\"color:#4ade80;\">●</span>'
-                : '<span style=\"color:#f87171;\">●</span>';
-            const hcpLabel = r.handicap_label || '';
-
-            html += '<div class=\"data-row\" style=\"padding:10px 0;flex-wrap:wrap;\">';
-            html += '<span>' + dirDot + ' ' + r.team_a + ' <strong>' + r.score + '</strong> ' + r.team_b + '</span>';
-            html += '<span style=\"font-size:0.8rem;\">方向: ' + dirDot + ' ' + renderResultLabel(r.predicted_result) + '/' + renderResultLabel(r.actual_result) + '</span>';
-            html += '<span style=\"font-size:0.8rem;\">让球(' + hcpLabel + '): ' + hcpDot + ' ' + (r.handicap_predicted||'') + '/' + (r.handicap_result||'') + '</span>';
-            html += '<span style=\"font-size:0.8rem;\">比分: ' + scoreDot + '</span>';
-            html += '</div>';
+            html += '<tr>';
+            html += '<td>' + r.team_a + ' vs ' + r.team_b + '</td>';
+            html += '<td><strong>' + r.score + '</strong></td>';
+            html += '<td class=\"' + (r.matched?'green':'red') + '\">' + dirDot + ' ' + renderResultLabel(r.predicted_result) + '</td>';
+            html += '<td class=\"' + (r.handicap_matched?'green':'red') + '\">' + hcpDot + ' ' + hcpPred + '</td>';
+            html += '<td class=\"' + (r.score_matched?'green':'red') + '\">' + scoreLabel + '</td>';
+            html += '</tr>';
         });
+        html += '</table>';
 
         // Summary
         const total = data.results.length;
