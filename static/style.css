@@ -85,6 +85,15 @@ main {
     background: var(--surface);
     border-radius: 8px;
 }
+.date-bar-full {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 16px;
+}
+.date-btn {
+    background: var(--surface); color: var(--accent); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+}
+.date-btn:hover { border-color: var(--accent); }
 
 /* ── Match Cards ── */
 .match-list { display: flex; flex-direction: column; gap: 12px; }

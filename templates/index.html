@@ -15,7 +15,11 @@
     </header>
 
     <main>
-        <div class="date-header">{{ today }} 赛程</div>
+        <div class="date-bar-full">
+            <button class="date-btn" onclick="changeDate(-1)">◀ 前一天</button>
+            <span class="date-header" id="date-display">{{ today }}</span>
+            <button class="date-btn" onclick="changeDate(1)">后一天 ▶</button>
+        </div>
 
         {% if not matches %}
         <div class="empty-state">
@@ -65,6 +69,33 @@
         <p>基于 Elo + 泊松 + 蒙特卡洛 量化模型 | 不构成投注建议</p>
     </footer>
     <script src="/static/app.js"></script>
-    <script>loadReview();</script>
+    <script>
+    loadReview();
+    let currentDate = '{{ today }}';
+    function changeDate(delta) {
+        let d = new Date(currentDate);
+        d.setDate(d.getDate() + delta);
+        currentDate = d.toISOString().slice(0,10);
+        document.getElementById('date-display').textContent = currentDate;
+        fetch('/api/matches?date=' + currentDate)
+            .then(r => r.json())
+            .then(data => {
+                let html = '';
+                data.matches.forEach(m => {
+                    let scoreHTML = '';
+                    if (m.status === 'finished' && m.score) {
+                        scoreHTML = '<span class=\"score-badge\">' + m.score + '</span>';
+                    }
+                    html += '<a href=\"/match/' + m.id + '\" class=\"match-card\">' +
+                        '<div class=\"match-header\"><span class=\"group-tag\">' + (m.group_name||'') + '</span><span class=\"time-tag\">' + (m.match_time||'') + '</span></div>' +
+                        '<div class=\"match-teams\"><div class=\"team team-a\"><span class=\"team-name\">' + m.team_a + '</span></div>' +
+                        '<div class=\"vs\">VS</div><div class=\"team team-b\"><span class=\"team-name\">' + m.team_b + '</span></div></div>' +
+                        '<div class=\"match-footer\">' + scoreHTML + '<span class=\"lock-badge\" style=\"color:var(--green)\">免费查看</span></div>' +
+                        '</a>';
+                });
+                document.querySelector('.match-list').innerHTML = html || '<div class=\"empty-state\"><p>当日暂无比赛</p></div>';
+            });
+    }
+    </script>
 </body>
 </html>

@@ -11,16 +11,15 @@ async function initMatchPage(matchId, isUnlocked) {
             '<div class="error">加载失败</div>';
     }
 
-    if (isUnlocked) {
-        // Already unlocked - show full content
+    // FREE MODE: always show full prediction
+    if (isUnlocked || true) {
         document.getElementById('lock-overlay').style.display = 'none';
-        document.getElementById('lock-tag').textContent = '✅ 已解锁';
+        document.getElementById('lock-tag').textContent = '免费开放';
         document.getElementById('lock-tag').className = 'free-tag';
         document.getElementById('module-selector').style.display = 'block';
         loadFullPrediction(matchId);
     }
 
-    // Update credits
     updateCreditsDisplay();
 }
 
