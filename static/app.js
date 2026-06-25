@@ -289,10 +289,16 @@ async function loadReview(date) {
                 ? '<span style="color:#4ade80;">●</span>'
                 : '<span style="color:#f87171;">●</span>';
 
-            html += '<div class="data-row" style="padding:10px 0;flex-wrap:wrap;">';
+            const hcpDot = r.handicap_matched
+                ? '<span style=\"color:#4ade80;\">●</span>'
+                : '<span style=\"color:#f87171;\">●</span>';
+            const hcpLabel = r.handicap_label || '';
+
+            html += '<div class=\"data-row\" style=\"padding:10px 0;flex-wrap:wrap;\">';
             html += '<span>' + dirDot + ' ' + r.team_a + ' <strong>' + r.score + '</strong> ' + r.team_b + '</span>';
-            html += '<span style="font-size:0.8rem;">方向: ' + renderResultLabel(r.predicted_result) + '/' + renderResultLabel(r.actual_result) + '</span>';
-            html += '<span style="font-size:0.8rem;">比分: ' + scoreDot + ' (' + (r.top_scores || []).join(' ') + ')</span>';
+            html += '<span style=\"font-size:0.8rem;\">方向: ' + dirDot + ' ' + renderResultLabel(r.predicted_result) + '/' + renderResultLabel(r.actual_result) + '</span>';
+            html += '<span style=\"font-size:0.8rem;\">让球(' + hcpLabel + '): ' + hcpDot + ' ' + (r.handicap_predicted||'') + '/' + (r.handicap_result||'') + '</span>';
+            html += '<span style=\"font-size:0.8rem;\">比分: ' + scoreDot + '</span>';
             html += '</div>';
         });
 
@@ -300,9 +306,11 @@ async function loadReview(date) {
         const total = data.results.length;
         const dirHits = data.results.filter(r => r.matched).length;
         const scoreHits = data.results.filter(r => r.score_matched).length;
+        const hcpHits = data.results.filter(r => r.handicap_matched).length;
         html += '<div style="text-align:center;padding:12px;margin-top:8px;background:var(--bg);border-radius:8px;">';
-        html += '<span style="font-size:1rem;">方向准确率：<strong style=\"color:var(--accent);\">' + dirHits + '/' + total + '</strong> (' + Math.round(dirHits/total*100) + '%)</span><br>';
-        html += '<span style="font-size:1rem;">比分准确率：<strong style=\"color:var(--accent);\">' + scoreHits + '/' + total + '</strong> (' + Math.round(scoreHits/total*100) + '%)</span>';
+        html += '<span style="font-size:0.9rem;">方向：<strong style=\"color:var(--accent);\">' + dirHits + '/' + total + '</strong> | ';
+        html += '让球：<strong style=\"color:var(--accent);\">' + hcpHits + '/' + total + '</strong> | ';
+        html += '比分：<strong style=\"color:var(--accent);\">' + scoreHits + '/' + total + '</strong></span>';
         html += '</div>';
 
         container.innerHTML = html;

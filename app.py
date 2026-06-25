@@ -360,6 +360,28 @@ def api_results():
         top_scores = [s[0] for s in pred['top_scores'][:5]]
         score_matched = actual in top_scores
 
+        # Handicap accuracy
+        H = match.get('handicap', -1) or -1
+        if H < 0:
+            # Favorite gives handicap, wins if actual_a + handicap > actual_b
+            handicap_result = 'cover' if (actual_a + H) > actual_b else ('push' if (actual_a + H) == actual_b else 'lose')
+            handicap_label = f'{match["team_a"]}{H}'
+        elif H > 0:
+            # Underdog receives handicap, wins if actual_a + H > actual_b
+            handicap_result = 'cover' if (actual_a + H) > actual_b else ('push' if (actual_a + H) == actual_b else 'lose')
+            handicap_label = f'{match["team_a"]}+{H}'
+        else:
+            handicap_result = 'win_a' if actual_a > actual_b else ('draw' if actual_a == actual_b else 'win_b')
+            handicap_label = '平手'
+
+        # Predicted handicap result
+        xa, xb = pred['xg_a'], pred['xg_b']
+        w = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H > b)
+        d = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H == b)
+        l = sum(engine.poisson_prob(xa,a)*engine.poisson_prob(xb,b) for a in range(8) for b in range(8) if a+H < b)
+        pred_handicap = 'cover' if w >= max(d,l) else ('push' if d >= max(w,l) else 'lose')
+        handicap_matched = (pred_handicap == handicap_result)
+
         results.append({
             'id': match['id'],
             'team_a': match['team_a'],
@@ -372,6 +394,10 @@ def api_results():
             'score_matched': score_matched,
             'top_scores': top_scores,
             'predicted_probs': {k: round(v,1) for k,v in pred['final'].items()},
+            'handicap_label': handicap_label,
+            'handicap_result': handicap_result,
+            'handicap_predicted': pred_handicap,
+            'handicap_matched': handicap_matched,
         })
     return jsonify({'results': results})
 
