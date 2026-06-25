@@ -1,7 +1,7 @@
 App({
   globalData: {
     // IMPORTANT: Change this to your actual server URL
-    apiBase: 'https://exit-eventually-shots-shopzilla.trycloudflare.com',
+    apiBase: 'https://electrical-garage-disabled-arg.trycloudflare.com',
     credits: 0
   },
 
