@@ -1,7 +1,7 @@
 App({
   globalData: {
     // IMPORTANT: Change this to your actual server URL
-    apiBase: 'https://electrical-garage-disabled-arg.trycloudflare.com',
+    apiBase: 'https://fountain-enabled-entitled-lexington.trycloudflare.com',
     credits: 0
   },
 
